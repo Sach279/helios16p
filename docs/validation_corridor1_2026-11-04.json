@@ -1,0 +1,42 @@
+{
+ "recording": "corridor1_20260703_170202.npz",
+ "vendor_ply": "corridor1_20260703_170202_vendor.ply",
+ "vendor_points": 7544566,
+ "calibration_source": "difop",
+ "samples": 200000,
+ "results": {
+  "difop": {
+   "n": 200000,
+   "median_mm": 0.00011920928955078125,
+   "p90_mm": 0.0004308471767545033,
+   "p95_mm": 0.0006750077994409874,
+   "max_mm": 2.58843786112621,
+   "within_1mm": 0.99989,
+   "within_1cm": 1.0,
+   "decoded_points": 7569886,
+   "seconds": 10.2
+  },
+  "vertical-only": {
+   "n": 200000,
+   "median_mm": 52.970755113645076,
+   "p90_mm": 233.40546079088236,
+   "p95_mm": 345.3646740277315,
+   "max_mm": 6704.914200433889,
+   "within_1mm": 0.032485,
+   "within_1cm": 0.199365,
+   "decoded_points": 7569886,
+   "seconds": 14.3
+  },
+  "default-grid": {
+   "n": 200000,
+   "median_mm": 112.19984358342023,
+   "p90_mm": 653.0334736732785,
+   "p95_mm": 881.6559350705716,
+   "max_mm": 7612.434037866071,
+   "within_1mm": 0.00512,
+   "within_1cm": 0.058165,
+   "decoded_points": 7569886,
+   "seconds": 29.8
+  }
+ }
+}

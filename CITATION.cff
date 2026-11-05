@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: "If you use helios16p in academic work, please cite it as below."
+title: "helios16p: the RoboSense Helios 16P LiDAR in pure Python"
+version: 0.2.0
+date-released: 2026-11-04
+license: MIT
+repository-code: "https://github.com/Sach279/helios16p"
+authors:
+  - family-names: Sachdeva
+    given-names: Akshit
+    affiliation: "School of Computing, Engineering and the Built Environment, Edinburgh Napier University"
+keywords:
+  - lidar
+  - robosense
+  - helios 16p
+  - point cloud
+  - ros 2
+abstract: >-
+  Live UDP decoding, recording, replay, a perception pipeline (ground removal,
+  clustering, multi-object tracking) and an interactive 3D viewer for the
+  RoboSense Helios 16P, with or without ROS. The decoder applies the sensor's
+  own DIFOP calibration and was validated against the vendor driver to a
+  fraction of a millimetre. Written during an MRes at Edinburgh Napier
+  University, where the sensor provided the metric reference for a thesis on
+  non-destructive surveying of traditional Scottish buildings with a nano-UAV.

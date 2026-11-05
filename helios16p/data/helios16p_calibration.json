@@ -1,0 +1,42 @@
+{
+ "sensor": "RoboSense Helios 16P",
+ "serial_hex": "57062d040000",
+ "captured": "2026-05-27, DIFOP packet of the recording walk_one",
+ "note": "per-laser angles in degrees, index = wire laser id 0..15 (channel % 16); vert from DIFOP byte 468, horiz from byte 564",
+ "vert_deg": [
+  12.99,
+  14.98,
+  8.99,
+  10.99,
+  5.0,
+  6.99,
+  1.0,
+  3.0,
+  -3.0,
+  -1.0,
+  -6.99,
+  -4.99,
+  -10.99,
+  -8.99,
+  -14.98,
+  -12.99
+ ],
+ "horiz_deg": [
+  3.15,
+  -7.64,
+  3.12,
+  -7.55,
+  3.1,
+  -7.5,
+  3.1,
+  -7.47,
+  3.1,
+  -7.46,
+  3.11,
+  -7.48,
+  3.13,
+  -7.52,
+  3.16,
+  -7.59
+ ]
+}

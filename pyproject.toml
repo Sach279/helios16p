@@ -1,0 +1,60 @@
+[project]
+name = "helios16p"
+version = "0.2.0"
+description = "RoboSense Helios 16P LiDAR in pure Python: live UDP decoding, recording, replay, perception pipeline and 3D viewer, with or without ROS"
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [{ name = "Akshit Sachdeva" }]
+requires-python = ">=3.10,<3.13"
+keywords = ["lidar", "robosense", "helios", "point-cloud", "ros2", "perception"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering",
+]
+dependencies = [
+    "numpy<2",
+    "scipy",
+    "scikit-learn",
+    "open3d==0.19.0",
+    "pyvista>=0.43",
+    "matplotlib",
+    "rosbags",
+    "mcap",
+    "mcap-ros2-support",
+]
+
+[project.optional-dependencies]
+ros = []  # rclpy is provided by a sourced ROS 2 (Jazzy) environment, not via pip
+dev = ["pytest", "pytest-timeout"]
+
+[project.urls]
+Homepage = "https://github.com/Sach279/helios16p"
+Issues = "https://github.com/Sach279/helios16p/issues"
+
+[project.scripts]
+helios16p-demo = "helios16p.cli:demo"
+helios16p-record = "helios16p.cli:record"
+helios16p-export = "helios16p.cli:export_ply"
+helios16p-info = "helios16p.cli:info"
+helios16p-trim = "helios16p.cli:trim"
+helios16p-validate = "helios16p.cli:validate"
+helios16p-snapshot = "helios16p.cli:snapshot"
+helios16p-import-pcap = "helios16p.cli:import_pcap"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["helios16p*"]
+
+[tool.setuptools.package-data]
+"helios16p.data" = ["*.json", "*.npz"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["slow: needs large local data, skipped when absent"]
+addopts = "-p no:cacheprovider"

@@ -1,0 +1,26 @@
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.venv/
+venv/
+env/
+.vscode/
+.idea/
+node_modules/
+build/
+dist/
+install/
+.pytest_cache/
+
+# data: recordings and exports stay out of the repository
+recordings/
+helios16p_recordings/
+helios16p_points/
+*.npz
+*.ply
+*.pcap
+*.mcap
+# ...except the bundled clip and the test fixtures
+!helios16p/data/*.npz
+!tests/data/*.npz
