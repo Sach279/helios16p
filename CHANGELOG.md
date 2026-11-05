@@ -41,6 +41,15 @@ with its own commands and a bundled recording.
   positional arrays still work.
 
 ### Added
+- A Qt window (`--viewer qt`, the default when PySide6 is installed): side
+  panel with live metrics, colour and camera buttons, toggles, clustering and
+  moving-threshold sliders, pause, PLY export and screenshot; every control has
+  a tooltip and a status-bar hint. The plain PyVista window keeps the keys.
+- The scene is shared by both windows and the snapshot tool: camera framed on
+  the cloud, grid on the fitted ground, colour legend, id and speed labels on
+  tracks, a grey shadow of the static scene in moving-only mode, horizontal
+  velocity arrows; persistent actors bring a frame from 80 ms to about 15 ms.
+- `--color`, `--only-moving`, `--screenshot` on the demo; `S` saves a screenshot.
 - `helios16p.calibration`: `Calibration`, `parse_difop`, bundled fallback
   (`helios16p/data/helios16p_calibration.json`, from our unit), save/load JSON.
 - Console commands: `helios16p-demo`, `helios16p-record`, `helios16p-export`,

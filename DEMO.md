@@ -6,11 +6,12 @@ plugged in, replace `helios16p-demo` with `helios16p-demo --source udp`.
 ```bash
 helios16p-demo                       # the room, the walking person boxed and tracked
 ```
-Orbit with the mouse, wheel to zoom. Keys: `1 2 3` colour by height, intensity,
-beam; `G` hide the ground; `B` boxes; `K` tracks; `L` trails; `M` the gimbal ray;
-`N` moving objects only; `C` switch the clustering backend (C++ Open3D or
-scikit-learn, watch the HUD time); `V` cycle the clustering voxel; `P` save the
-frame as PLY to `./recordings/ply/`; `Q` quit.
+Orbit with the mouse, wheel to zoom. The panel on the right does everything the
+keys do, with a tooltip on each control: `1 2 3` colour by height, intensity,
+beam; `R` refit the camera; `G` ground; `B` boxes; `K` tracks; `T` labels; `L`
+trails; `M` the gimbal ray; `N` moving objects only (the static scene stays as a
+grey shadow); `C` switch the clustering backend and watch the processing time;
+`Space` pause; `P` save the frame as PLY; `S` screenshot; `Q` quit.
 
 ```bash
 helios16p-info --frames              # 3000 packets, 4 s, 600 rpm single return, the calibration tables, 42 frames

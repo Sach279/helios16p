@@ -20,9 +20,15 @@ The install is about 2.4 GB (Open3D and VTK) and takes a few minutes. No
 `python3.12` on your machine? `uv venv -p 3.12` or `conda create -n helios
 python=3.12` get one; Python 3.13 waits for an Open3D wheel.
 
-A window opens with the room, the walking person boxed and tracked, and a HUD.
-Orbit with the mouse, press `1 2 3` to colour by height, intensity or beam,
-`Q` to quit. No sensor, no ROS, no data download needed.
+A window opens: the room in 3D on the left, a panel on the right with live
+metrics (points, ground share, objects, tracks, processing time, the gimbal's
+target), colour and camera buttons, toggles for ground, boxes, tracks, labels,
+trails and moving-only mode, the clustering backend and voxel sliders, pause,
+PLY export and screenshot. Every control explains itself on hover and in the
+status bar; the keys do the same things (`1 2 3` colour, `R` refit, `Space`
+pause, `S` screenshot, `Q` quit). No sensor, no ROS, no data download needed.
+
+![the Qt window: 3D view on the left, metrics and controls on the right](docs/figures/qt_window.png)
 
 With the sensor plugged in (host NIC on `192.168.1.102/24`, sensor at
 `192.168.1.200`, no sudo needed, ports are above 1024):
@@ -37,7 +43,7 @@ helios16p-demo --rec recordings/lab_20261104_120000.npz    # replays as it was s
 
 | command | what it does |
 |---|---|
-| `helios16p-demo` | the viewer: `--source file` (default, bundled clip), `udp`, `mcap`, `ros`, `synthetic`; `--viewer none` prints statistics only |
+| `helios16p-demo` | the viewer: `--source file` (default, bundled clip), `udp`, `mcap`, `ros`, `synthetic`; `--viewer qt\|pyvista\|open3d\|none`; `--color`, `--only-moving`, `--screenshot` |
 | `helios16p-record` | records MSOP and DIFOP packets with host timestamps, one `.npz` per session |
 | `helios16p-info` | packets, duration, frames, rpm, return mode and the calibration of a recording; `--save-calib` |
 | `helios16p-export` | PLY with x y z, intensity and ring (one dense cloud or one file per frame) for CloudCompare, MeshLab, Open3D |
@@ -117,8 +123,11 @@ Details, byte offsets and history in [docs/07-calibration.md](docs/07-calibratio
   run repeats), DBSCAN clustering (Open3D C++ or scikit-learn, switchable live
   with `C`), Kalman tracks with Hungarian assignment, and a virtual gimbal that
   keeps the chosen track centred.
-- **Viewers** (`helios16p/viz/`): PyVista/VTK (default, works on X11 and
-  XWayland) and Open3D; the snapshot tool renders the same scene off screen.
+- **Viewers** (`helios16p/viz/`): one `Scene` draws a frame on any PyVista
+  plotter (persistent actors, about 15 ms a frame); `--viewer qt` wraps it in a
+  Qt panel (default when PySide6 is installed), `--viewer pyvista` is the plain
+  window with keys and a HUD, `--viewer open3d` the alternative, `--viewer none`
+  prints statistics; `helios16p-snapshot` renders the same scene off screen.
 
 Documentation index: [docs/README.md](docs/README.md) (overview, architecture,
 the UDP path, ROS 2 path, protocol notes, design decisions, performance, usage,

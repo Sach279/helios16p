@@ -138,19 +138,17 @@ def main(argv: list[str] | None = None) -> int:
         title = args.title or f"{rec.name}: {args.merge} revolutions merged, {len(pts):,} points, coloured by {args.color}"
         p.add_text(title, position="upper_left", font_size=10, color="white")
     else:
-        from ..viz.pyvista_viewer import PyVistaViewer, _ground_grid
+        from ..viz.pyvista_viewer import PyVistaViewer, Scene
         ann, used = annotated_frame(rec, args.frame, calib, cfg)
-        viewer = PyVistaViewer(cfg)
-        viewer._color_mode = args.color
-        p.add_mesh(_ground_grid(), color="#333344", line_width=1, name="_grid")
-        viewer._rebuild(p, ann)
+        scene = Scene(cfg, args.color)
+        scene.rebuild(p, ann)
         if args.hud:
-            viewer._update_hud(p, ann)
+            PyVistaViewer(cfg, color_mode=args.color)._update_hud(p, ann)
         title = args.title or (f"{rec.name}: frame {ann.frame.frame_id}, {ann.frame.num_points:,} points, "
                                f"{len(ann.detections)} objects, {len([t for t in ann.tracks if t.confirmed])} tracks")
         p.add_text(title, position="lower_left", font_size=10, color="#cccccc")
         pts = ann.frame.points
-    _camera(p, args.view, 1.0 if args.merge else 1.8, pts)
+    _camera(p, args.view, 1.0 if args.merge else 1.6, pts)
     p.screenshot(args.out)
     print(f"wrote {args.out} (calibration: {used.source})")
     return 0

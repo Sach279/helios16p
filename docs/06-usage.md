@@ -197,6 +197,9 @@ The PyVista viewer (`helios16p/viz/pyvista_viewer.py`) supports both keyboard sh
 | `V` | Cycle voxel size: off → 5 cm → 10 cm → off (live) |
 | `P` | Save the current frame to `./recordings/ply/` as PLY (x y z, intensity, ring, colour) |
 | `S` | Save a screenshot of the window to `./recordings/shots/` |
+| `T` | Toggle the id and speed labels on confirmed tracks |
+| `R` | Refit the camera on the cloud |
+| `Space` | Pause and resume the source (Qt window) |
 | `Q` | Quit |
 
 ### On-screen clickable widgets (right side of window)

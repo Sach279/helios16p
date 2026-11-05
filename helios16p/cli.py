@@ -77,8 +77,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--msop-port", type=int, default=None, help="UDP port of the point data (default 6699)")
     p.add_argument("--difop-port", type=int, default=None, help="UDP port of the calibration packets (default 7788)")
     p.add_argument("--device-ip", default=None, help="accept packets from this sensor address only (two sensors on one switch)")
-    p.add_argument("--viewer", default="pyvista", choices=["pyvista", "open3d", "none"],
-                   help="pyvista (default, works on X11 and XWayland), open3d, or none (print stats only)")
+    p.add_argument("--viewer", default="auto", choices=["auto", "qt", "pyvista", "open3d", "none"],
+                   help="auto (Qt panel if PySide6 is installed, else the plain PyVista window), qt, pyvista, open3d, or none (print stats only)")
     p.add_argument("--color", default="height", choices=["height", "intensity", "ring"], help="initial colouring")
     p.add_argument("--only-moving", action="store_true", help="start in moving-objects-only mode")
     p.add_argument("--screenshot", default=None, help="save the window to this PNG once (see --screenshot-after)")
@@ -117,18 +117,45 @@ def demo(argv: list[str] | None = None) -> int:
                 if args.max_frames and n >= args.max_frames:
                     break
         return 0
-    if args.viewer == "open3d":
-        from .viz.open3d_viewer import Open3DViewer as Viewer
+    label = source_label(args, source)
+    kind = args.viewer
+    if kind == "auto":
+        try:
+            import pyvistaqt  # noqa: F401
+            from PySide6 import QtWidgets  # noqa: F401
+            kind = "qt"
+        except ImportError:
+            kind = "pyvista"
+    if kind == "open3d":
+        from .viz.open3d_viewer import Open3DViewer
+        viewer = Open3DViewer(cfg)
     else:
-        from .viz.pyvista_viewer import PyVistaViewer as Viewer
-    if args.viewer == "open3d":
-        viewer = Viewer(cfg)
-    else:
+        if kind == "qt":
+            from .viz.qt_viewer import QtViewer as Viewer
+        else:
+            from .viz.pyvista_viewer import PyVistaViewer as Viewer
         viewer = Viewer(cfg, color_mode=args.color, only_moving=args.only_moving,
-                        screenshot=args.screenshot, screenshot_after=args.screenshot_after)
+                        screenshot=args.screenshot, screenshot_after=args.screenshot_after, source_label=label)
     with source:
         viewer.run(source, pipeline)
     return 0
+
+
+def source_label(args, source) -> str:
+    """One line for the panel: what is being shown and with which calibration."""
+    cal = getattr(source, "calibration", None)
+    cal_s = f", calibration: {cal.source}" if cal is not None else ""
+    if args.source == "file":
+        rec = Path(args.rec) if args.rec else bundled_clip()
+        dur = getattr(source, "duration", None)
+        return f"replay {rec.name}" + (f", {dur:.1f} s" if dur else "") + (", loop" if args.loop else "") + cal_s
+    if args.source == "udp":
+        return f"live UDP {args.msop_port or 6699}" + cal_s
+    if args.source == "mcap":
+        return f"bag {Path(args.bag).name}"
+    if args.source == "ros":
+        return f"ROS 2 topic {args.topic}"
+    return "synthetic scene"
 
 
 def record(argv: list[str] | None = None) -> int:
