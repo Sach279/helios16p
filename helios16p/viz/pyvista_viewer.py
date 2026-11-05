@@ -48,17 +48,21 @@ def _ground_grid(size: float = 6.0, step: float = 1.0) -> pv.PolyData:
 
 class PyVistaViewer:
     _HELP = ("1/2/3 colour  G ground  B boxes  K tracks  L trails  M control  "
-             "N moving-only  C backend  V voxel  P save-ply  Q quit")
+             "N moving-only  C backend  V voxel  P save-ply  S screenshot  Q quit")
 
-    def __init__(self, cfg: DemoConfig) -> None:
+    def __init__(self, cfg: DemoConfig, color_mode: str = "height", only_moving: bool = False,
+                 screenshot: str | None = None, screenshot_after: float = 3.0) -> None:
         self.cfg = cfg
-        self._color_mode = "height"
+        self._screenshot = screenshot            # save the window to this file after screenshot_after seconds
+        self._screenshot_after = screenshot_after
+        self._shot_done = False
+        self._color_mode = color_mode
         self._show_ground = True
         self._show_clusters = True
         self._show_tracks = True
         self._show_trails = True
         self._show_control = True
-        self._only_moving = False
+        self._only_moving = only_moving
 
         self._latest_ann: FrameAnnotations | None = None
         self._lock = threading.Lock()
@@ -98,8 +102,13 @@ class PyVistaViewer:
             pass
         first = True
         last_status = 0.0
+        t_open = time.perf_counter()
         try:
             while self._running:
+                if self._screenshot and not self._shot_done and not first and \
+                        time.perf_counter() - t_open >= self._screenshot_after:
+                    self._shot(p, self._screenshot)
+                    self._shot_done = True
                 ann = None
                 with self._lock:
                     if self._has_new or self._dirty:
@@ -162,6 +171,7 @@ class PyVistaViewer:
         p.add_key_event("c", self._cycle_backend)
         p.add_key_event("v", self._cycle_voxel)
         p.add_key_event("p", self._save_ply)
+        p.add_key_event("s", lambda: self._shot(p))
         p.add_key_event("q", lambda: setattr(self, "_running", False))
 
     def _save_ply(self) -> None:
@@ -185,6 +195,18 @@ class PyVistaViewer:
             print(f"\n[ply] could not write {f}: {exc}")
             return
         print(f"\n[ply] saved {fr.num_points} points -> {f} (x y z, intensity, ring, colour)")
+
+    def _shot(self, p, path: str | None = None) -> None:  # noqa: ANN001
+        """Save what the window shows (key S, or --screenshot on the demo)."""
+        import time as _t
+        from pathlib import Path
+        f = Path(path) if path else Path("recordings/shots") / f"shot_{_t.strftime('%Y%m%d_%H%M%S')}.png"
+        f.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            p.screenshot(str(f))
+            print(f"\n[shot] saved {f}")
+        except Exception as exc:
+            print(f"\n[shot] failed: {exc}")
 
     def _cycle_backend(self) -> None:
         """Toggle the clustering backend live (Python sklearn <-> C++ Open3D)."""

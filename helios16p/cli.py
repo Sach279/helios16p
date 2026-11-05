@@ -79,6 +79,10 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--device-ip", default=None, help="accept packets from this sensor address only (two sensors on one switch)")
     p.add_argument("--viewer", default="pyvista", choices=["pyvista", "open3d", "none"],
                    help="pyvista (default, works on X11 and XWayland), open3d, or none (print stats only)")
+    p.add_argument("--color", default="height", choices=["height", "intensity", "ring"], help="initial colouring")
+    p.add_argument("--only-moving", action="store_true", help="start in moving-objects-only mode")
+    p.add_argument("--screenshot", default=None, help="save the window to this PNG once (see --screenshot-after)")
+    p.add_argument("--screenshot-after", type=float, default=3.0, help="seconds after the first frame (default 3)")
     p.add_argument("-v", "--verbose", action="store_true")
     return p
 
@@ -117,7 +121,11 @@ def demo(argv: list[str] | None = None) -> int:
         from .viz.open3d_viewer import Open3DViewer as Viewer
     else:
         from .viz.pyvista_viewer import PyVistaViewer as Viewer
-    viewer = Viewer(cfg)
+    if args.viewer == "open3d":
+        viewer = Viewer(cfg)
+    else:
+        viewer = Viewer(cfg, color_mode=args.color, only_moving=args.only_moving,
+                        screenshot=args.screenshot, screenshot_after=args.screenshot_after)
     with source:
         viewer.run(source, pipeline)
     return 0

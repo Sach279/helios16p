@@ -196,6 +196,7 @@ The PyVista viewer (`helios16p/viz/pyvista_viewer.py`) supports both keyboard sh
 | `C` | Cycle clustering backend: open3d ↔ sklearn (live, takes effect next frame) |
 | `V` | Cycle voxel size: off → 5 cm → 10 cm → off (live) |
 | `P` | Save the current frame to `./recordings/ply/` as PLY (x y z, intensity, ring, colour) |
+| `S` | Save a screenshot of the window to `./recordings/shots/` |
 | `Q` | Quit |
 
 ### On-screen clickable widgets (right side of window)
