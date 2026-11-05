@@ -301,7 +301,7 @@ class Scene:
             "tracks": len(confirmed),
             "moving": len(moving),
             "proc_ms": s.get("proc_ms", 0.0),
-            "proc_hz": s.get("proc_fps", 0.0),
+            "proc_hz": (1000.0 / s["proc_ms"]) if s.get("proc_ms") else 0.0,  # this frame, not a running average
             "target": None,
         }
         c = ann.control
@@ -389,15 +389,17 @@ class PyVistaViewer:
         p = pv.Plotter(title="Helios 16P", window_size=(1400, 860))
         p.set_background(BG)
         p.add_text(self.KEYS, position="lower_left", font_size=8, color="#8a8a99", name="_help")
-        p.add_text("waiting for the first frame...", position="upper_left", font_size=11, color="white", name="_hud")
+        p.add_text("starting the pipeline (the first frame takes a few seconds: Open3D loads)...", position="upper_left", font_size=11, color="white", name="_hud")
         self._register_keys(p)
         self._running = True
         try:
             p.iren.add_observer("ExitEvent", lambda *a: setattr(self, "_running", False))
         except Exception:
             pass
-        worker = self.runner.start(source, pipeline)
         p.show(interactive_update=True, auto_close=False)
+        p.update()
+        pipeline.warmup()  # on the main thread, window already open
+        worker = self.runner.start(source, pipeline)
         first = True
         shot_done = False
         t_open = time.perf_counter()

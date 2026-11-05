@@ -79,8 +79,20 @@ class QtViewer:
         status.setStyleSheet(PANEL_QSS)
         self._status = status
 
+        hints = {}
+
+        class _Hover(QtCore.QObject):
+            """Show the short hint in the status bar while the mouse is over a control."""
+            def eventFilter(self, obj, ev):
+                if ev.type() == QtCore.QEvent.Enter and obj in hints:
+                    status.showMessage(hints[obj])
+                elif ev.type() == QtCore.QEvent.Leave and obj in hints:
+                    status.clearMessage()
+                return False
+        self._hover = _Hover(win)
+
         def tip(w, short: str, long: str):
-            w.setToolTip(long); w.setStatusTip(short)
+            w.setToolTip(long); hints[w] = short; w.installEventFilter(self._hover)
 
         # header
         title = QtWidgets.QLabel("Helios 16P"); title.setObjectName("title"); pl.addWidget(title)
@@ -186,7 +198,7 @@ class QtViewer:
 
         # run
         self._win = win
-        worker = self.runner.start(source, pipeline)
+        self._frame_lbl = QtWidgets.QLabel(""); status.addPermanentWidget(self._frame_lbl)
         timer = QtCore.QTimer(); timer.setInterval(25)
         t_open = time.perf_counter(); shot = {"done": False}
 
@@ -212,9 +224,13 @@ class QtViewer:
                 if self._screenshot or self.cfg.frame_rate <= 0:
                     win.close()
         timer.timeout.connect(tick); timer.start()
-        status.showMessage("waiting for the first frame...")
+        status.showMessage("starting the pipeline (the first frame takes a few seconds: Open3D loads)...")
 
         win.show()
+        app.processEvents()
+        secs = pipeline.warmup()  # on the main thread, window already visible
+        status.showMessage(f"pipeline ready in {secs:.1f} s; hover a control for what it does", 5000)
+        worker = self.runner.start(source, pipeline)
         try:
             app.exec()
         finally:
@@ -253,7 +269,7 @@ class QtViewer:
     def _pause(self, state: bool) -> None:
         self.runner.paused = bool(state)
         self._pause_btn.setText("Resume" if state else "Pause")
-        self._status.showMessage("paused" if state else "running")
+        self._status.showMessage("paused: the last frame stays, explore, save or screenshot it" if state else "running", 3000)
 
     def _save_ply(self) -> None:
         if self._last is None:
@@ -283,4 +299,5 @@ class QtViewer:
             self._vals["target"].setText(f"#{tid}  {spd:.1f} m/s  err {err:+.0f}°")
         else:
             self._vals["target"].setText("no moving target")
-        self._status.showMessage(f"frame {m['frame']}  ·  {m['proc_hz']:.1f} frames/s processed" + ("  ·  paused" if self.runner.paused else ""))
+        self._frame_lbl.setText(f"frame {m['frame']}   {m['proc_hz']:.1f} frames/s" + ("   paused" if self.runner.paused else "") + "  ")
+

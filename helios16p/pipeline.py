@@ -35,6 +35,25 @@ class ProcessingPipeline:
         self._last_ts: float | None = None
         self._ema_fps: float | None = None
 
+    def warmup(self) -> float:
+        """Import the heavy libraries (Open3D takes seconds) and run one synthetic frame; returns the seconds taken.
+
+        Windows call this on the main thread before starting the worker: importing
+        Open3D from a background thread while a Qt event loop runs can stall for good."""
+        from .synthetic import synthetic_frame
+        t = time.perf_counter()
+        try:
+            import open3d  # noqa: F401
+        except ImportError:
+            pass
+        state = (self._last_ts, self._ema_fps)
+        self.process(synthetic_frame(0))
+        self._last_ts, self._ema_fps = state
+        self.tracker = type(self.tracker)(self.cfg)  # forget the synthetic tracks
+        if self._gimbal is not None:
+            self._gimbal = type(self._gimbal)(self.cfg)
+        return time.perf_counter() - t
+
     def process(self, frame: Frame) -> FrameAnnotations:
         from .processing.clustering import cluster_objects
         from .processing.ground import segment_ground
