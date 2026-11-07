@@ -1,0 +1,4 @@
+The wire-protocol constants in helios16p/config.py and the decoding geometry in
+helios16p/sources/udp_source.py follow the published rs_driver sources of
+RoboSense (BSD 3-Clause licence, https://github.com/RoboSense-LiDAR/rs_driver).
+No RoboSense code is included or linked at runtime.
